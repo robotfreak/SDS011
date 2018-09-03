@@ -37,9 +37,9 @@ SDS011::SDS011(void) {
 }
 
 // --------------------------------------------------------
-// SDS011:read
+// SDS011:readInt
 // --------------------------------------------------------
-int SDS011::read(float *p25, float *p10) {
+int SDS011::readInt(int *p25, int *p10) {
 	byte buffer;
 	int value;
 	int len = 0;
@@ -65,14 +65,25 @@ int SDS011::read(float *p25, float *p10) {
 		}
 		len++;
 		if (len == 10 && checksum_ok == 1) {
-			*p10 = (float)pm10_serial/10.0;
-			*p25 = (float)pm25_serial/10.0;
+			*p10 = pm10_serial/10.0;
+			*p25 = pm25_serial/10.0;
 			len = 0; checksum_ok = 0; pm10_serial = 0.0; pm25_serial = 0.0; checksum_is = 0;
 			error = 0;
 		}
 		yield();
 	}
 	return error;
+}
+
+// --------------------------------------------------------
+// SDS011:readFloat
+// --------------------------------------------------------
+int SDS011::readFloat(float *p25, float *p10) {
+  int p25i, p10i;
+  readInt(&p25i, &p10i);
+  *p10 =(float) p10i/10.0;
+  *p25 =(float) p25i/10.0;
+
 }
 
 // --------------------------------------------------------
@@ -96,24 +107,24 @@ void SDS011::wakeup() {
 	sds_data->flush();
 }
 
-void SDS011::begin(uint8_t pin_rx, uint8_t pin_tx) {
-	_pin_rx = pin_rx;
-	_pin_tx = pin_tx;
+//void SDS011::begin(uint8_t pin_rx, uint8_t pin_tx) {
+//	_pin_rx = pin_rx;
+//	_pin_tx = pin_tx;
 
-	SoftwareSerial *softSerial = new SoftwareSerial(_pin_rx, _pin_tx);
+//	SoftwareSerial *softSerial = new SoftwareSerial(_pin_rx, _pin_tx);
 
-	softSerial->begin(9600);
+//	softSerial->begin(9600);
 
-	sds_data = softSerial;
-}
+//	sds_data = softSerial;
+//}
 
 void SDS011::begin(HardwareSerial* serial) {
 	serial->begin(9600);
 	sds_data = serial;
 }
 
-void SDS011::begin(SoftwareSerial* serial) {
-	serial->begin(9600);
-	sds_data = serial;
-}
+//void SDS011::begin(SoftwareSerial* serial) {
+//	serial->begin(9600);
+//	sds_data = serial;
+//}
 
